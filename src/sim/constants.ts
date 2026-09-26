@@ -190,9 +190,9 @@ export const COLLAPSE_MASS = 0.02;
 export const COLLAPSE_SPEED = 30;
 export const COLLAPSE_INTERVAL = 0.5;
 /** Ejected mass becomes this many particles per solar mass, within a floor and a ceiling. */
-export const DUST_PER_SUN = 2500;
-export const DUST_EMIT_MIN = 300;
-export const DUST_EMIT_MAX = 2500;
+export const DUST_PER_SUN = 5000;
+export const DUST_EMIT_MIN = 600;
+export const DUST_EMIT_MAX = 5000;
 /** Outward speed of a planetary nebula and of supernova ejecta, in world units per second. */
 export const NEBULA_DUST_SPEED = 35;
 export const SUPERNOVA_DUST_SPEED = 200;

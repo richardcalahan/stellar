@@ -67,19 +67,36 @@ const ACCRETION_FRAGMENT = /* glsl */ `
     float r = length(vLocal);
     float t = clamp((r - uInner) / (uOuter - uInner), 0.0, 1.0);
     float angle = atan(vLocal.y, vLocal.x);
-    float omega = uSpeed / pow(0.18 + t, 1.5);
+    // Keplerian: the inner edge orbits fastest.
+    float omega = uSpeed / pow(0.25 + t, 1.5);
     float a = angle - uTime * omega;
-    float bands = 0.55 + 0.45 * sin(a * 5.0 + t * 20.0) * sin(a * 11.0 - t * 7.0);
-    float streaks = 0.5 + 0.5 * sin(a * 23.0 + t * 40.0 + uTime * 2.0);
-    vec3 hot = vec3(1.6, 1.35, 1.0);
-    vec3 mid = vec3(1.3, 0.55, 0.15);
-    vec3 cold = vec3(0.5, 0.08, 0.02);
-    vec3 col = t < 0.4 ? mix(hot, mid, t / 0.4) : mix(mid, cold, (t - 0.4) / 0.6);
-    float beam = 0.7 + 0.5 * sin(angle + 1.2);
-    float edge = smoothstep(0.0, 0.06, t) * (1.0 - smoothstep(0.7, 1.0, t));
-    float flicker = 0.9 + 0.1 * sin(uTime * 9.0 + t * 30.0) * sin(uTime * 5.3 + angle * 2.0);
-    float intensity = edge * (0.6 + 0.5 * bands + 0.3 * streaks) * beam * flicker;
-    gl_FragColor = vec4(col * intensity, edge * 0.95);
+    // Two smooth spiral arms and a gentle finer texture; no sharp streaks.
+    float arms = 0.65 + 0.35 * sin(a * 2.0 + t * 9.0);
+    float fine = 0.88 + 0.12 * sin(a * 7.0 - t * 5.0 + uTime * 0.4);
+    vec3 hot = vec3(1.7, 1.4, 1.05);
+    vec3 mid = vec3(1.2, 0.5, 0.12);
+    vec3 cold = vec3(0.4, 0.06, 0.02);
+    vec3 col = t < 0.35 ? mix(hot, mid, t / 0.35) : mix(mid, cold, (t - 0.35) / 0.65);
+    // Doppler beaming: the side swinging toward the viewer is brighter.
+    float beam = 0.65 + 0.55 * sin(angle + 1.2);
+    float edge = smoothstep(0.0, 0.08, t) * (1.0 - smoothstep(0.6, 1.0, t));
+    float flicker = 0.94 + 0.06 * sin(uTime * 2.6 + angle);
+    float intensity = edge * arms * fine * beam * flicker;
+    gl_FragColor = vec4(col * intensity, edge);
+  }
+`;
+
+/** The void: a soft black disc that swallows the light behind the hole, so it reads as a hole. */
+const VOID_FRAGMENT = /* glsl */ `
+  uniform float uTime;
+  varying vec2 vUv;
+
+  void main() {
+    vec2 p = (vUv - 0.5) * 2.0;
+    float d = length(p);
+    float breathe = 1.0 + 0.05 * sin(uTime * 0.6);
+    float dark = smoothstep(1.0, 0.3, d * breathe);
+    gl_FragColor = vec4(0.0, 0.0, 0.0, dark * 0.9);
   }
 `;
 
@@ -111,7 +128,12 @@ const HALO_FRAGMENT = /* glsl */ `
   }
 `;
 
-/** Relativistic jets: pulses of light racing out along the axis and fading toward the tip. */
+/**
+ * Relativistic jets as glowing ribbons: a white-blue core inside a soft blue
+ * sheath, widening toward the tip, with bright knots racing outward and a
+ * sway that grows along the length like a plasma stream in a wind.
+ * u runs across the ribbon, v from the hole (0) to the tip (1).
+ */
 const JET_VERTEX = /* glsl */ `
   varying vec2 vUv;
   void main() {
@@ -122,19 +144,30 @@ const JET_VERTEX = /* glsl */ `
 
 const JET_FRAGMENT = /* glsl */ `
   uniform float uTime;
-  uniform vec3 uColor;
   varying vec2 vUv;
 
   void main() {
-    float along = vUv.y;
-    float pulses = 0.55 + 0.45 * sin(along * 28.0 - uTime * 14.0);
-    float fine = 0.7 + 0.3 * sin(along * 90.0 - uTime * 30.0);
-    float fade = pow(1.0 - along, 1.4);
-    float core = 0.6 + 0.4 * sin(uTime * 11.0);
-    float intensity = fade * (0.35 + 0.65 * pulses * fine) * core;
-    gl_FragColor = vec4(uColor * intensity, intensity * 0.9);
+    float v = vUv.y;
+    float u = vUv.x * 2.0 - 1.0;
+    float t = uTime;
+    float sway = 0.18 * v * sin(v * 7.0 - t * 1.6) + 0.06 * v * sin(v * 19.0 + t * 2.7);
+    float x = u - sway;
+    float width = mix(0.28, 1.0, v);
+    float core = exp(-pow(x / (0.14 * width), 2.0));
+    float sheath = exp(-pow(x / (0.55 * width), 2.0)) * 0.4;
+    float knots = 0.55 + 0.45 * sin(v * 22.0 - t * 5.0) * sin(v * 6.0 - t * 1.7);
+    float fade = pow(1.0 - v, 1.1) * smoothstep(0.0, 0.04, v);
+    float flicker = 0.92 + 0.08 * sin(t * 9.0 + v * 25.0);
+    vec3 sheathColor = vec3(0.45, 0.75, 1.5);
+    vec3 coreColor = vec3(1.3, 1.5, 1.9);
+    vec3 light = coreColor * core * (0.6 + 0.6 * knots) + sheathColor * sheath;
+    gl_FragColor = vec4(light * fade * flicker, 1.0);
   }
 `;
+
+/** Jet ribbon size in world units, before the per-hole scale. */
+const JET_LENGTH = 60;
+const JET_WIDTH = 10;
 
 interface BodyEffect {
   root: Group;
@@ -179,7 +212,11 @@ export class EffectsView {
       effect.root.position.set(body.x, body.y, 0);
       const scale = Math.max(body.radius / 4, 0.8);
       effect.root.scale.setScalar(scale);
-      if (effect.spinner) effect.spinner.rotation.z = time * 2.2;
+      if (effect.spinner) {
+        // Pulsars spin their beams; a black hole's jets slowly precess instead.
+        effect.spinner.rotation.z =
+          effect.remnant === 'blackHole' ? 0.14 * Math.sin(time * 0.35) : time * 2.2;
+      }
       if (effect.uTime) effect.uTime.value = time;
     }
     for (const [id, effect] of this.effects) {
@@ -248,8 +285,23 @@ export class EffectsView {
       }
       case 'blackHole': {
         const uTime = { value: 0 };
-        const disc = this.accretionDisc(6, 22, uTime);
+        const dark = new Mesh(
+          new PlaneGeometry(64, 64),
+          new ShaderMaterial({
+            vertexShader: HALO_VERTEX,
+            fragmentShader: VOID_FRAGMENT,
+            uniforms: { uTime },
+            transparent: true,
+            depthWrite: false,
+            depthTest: false,
+          }),
+        );
+        dark.renderOrder = -1;
+        root.add(dark);
+
+        const disc = this.accretionDisc(5, 16, uTime);
         disc.rotation.x = DISC_TILT;
+        disc.renderOrder = 1;
         root.add(disc);
 
         const halo = new Mesh(
@@ -268,28 +320,30 @@ export class EffectsView {
         root.add(halo);
 
         const axis = new Vector3(0, -Math.sin(DISC_TILT), Math.cos(DISC_TILT));
+        const jets = new Group();
         for (const sign of [1, -1]) {
           const jet = new Mesh(
-            new ConeGeometry(2.6, 80, 10, 1, true),
+            new PlaneGeometry(JET_WIDTH, JET_LENGTH, 1, 24),
             new ShaderMaterial({
               vertexShader: JET_VERTEX,
               fragmentShader: JET_FRAGMENT,
-              uniforms: { uTime, uColor: { value: new Vector3(0.7, 0.9, 1.4) } },
+              uniforms: { uTime },
               transparent: true,
               depthWrite: false,
+              depthTest: false,
               blending: AdditiveBlending,
               side: DoubleSide,
             }),
           );
-          jet.position.copy(axis).multiplyScalar(sign * 42);
-          jet.quaternion.setFromUnitVectors(
-            new Vector3(0, 1, 0),
-            axis.clone().multiplyScalar(sign),
-          );
-          jet.rotation.z += Math.PI;
-          root.add(jet);
+          // The ribbon's own y axis points out along the jet; v = 0 sits at the hole.
+          const direction = axis.clone().multiplyScalar(sign);
+          jet.position.copy(direction).multiplyScalar(JET_LENGTH / 2 + 3);
+          jet.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), direction);
+          jet.renderOrder = 2;
+          jets.add(jet);
         }
-        return { root, remnant: body.remnant, spinner: null, uTime };
+        root.add(jets);
+        return { root, remnant: body.remnant, spinner: jets, uTime };
       }
       case 'protostar': {
         const uTime = { value: 0 };
@@ -341,7 +395,7 @@ export class EffectsView {
           uInner: { value: inner },
           uOuter: { value: outer },
           uTime,
-          uSpeed: { value: 1.6 },
+          uSpeed: { value: 0.9 },
         },
         transparent: true,
         depthWrite: false,

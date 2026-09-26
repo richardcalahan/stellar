@@ -162,7 +162,7 @@ export class ParticlesView implements Resizable {
         vy: Math.sin(angle) * v,
         vz: (random() - 0.5) * 6,
         life: life * (0.7 + 0.6 * random()),
-        size: 3 + random() * 5,
+        size: 1.2 + random() * 1.8,
         color,
       });
     }
@@ -214,7 +214,7 @@ export class ParticlesView implements Resizable {
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         life,
-        size: 3.5 + random() * 4,
+        size: 1.4 + random() * 1.8,
         color,
       });
     }

@@ -237,11 +237,11 @@ function playEvents(events: readonly SimEvent[], now: number): void {
     switch (event.kind) {
       case 'death':
         if (event.remnant === 'whiteDwarf') {
-          particles.ring(x, y, event.starRadius, 600, 28, NEBULA_INNER, NEBULA_RIM, 10, random);
-          particles.burst(x, y, 150, 22, [0.6, 0.3, 0.9], 12, 12, random);
+          particles.ring(x, y, event.starRadius, 1800, 28, NEBULA_INNER, NEBULA_RIM, 10, random);
+          particles.burst(x, y, 400, 22, [0.6, 0.3, 0.9], 12, 4, random);
         } else {
-          particles.burst(x, y, 200, 260, [1, 1, 1], 1.5, 7, random);
-          particles.shell(x, y, 700, 140, [1.0, 0.45, 0.7], 4.5, random);
+          particles.burst(x, y, 500, 260, [1, 1, 1], 1.5, 3.5, random);
+          particles.shell(x, y, 1600, 140, [1.0, 0.45, 0.7], 4.5, random);
           particles.ring(
             x,
             y,
@@ -304,9 +304,9 @@ const NEBULA_RIM: [number, number, number] = [1.0, 0.25, 0.2];
 if (query.get('scene') === 'fx') {
   // Fire every one-shot effect at load, for checking the particle system by eye.
   const random = world.random;
-  particles.ring(-400, 0, 20, 600, 28, NEBULA_INNER, NEBULA_RIM, 10, random);
-  particles.shell(400, 0, 700, 140, [1.0, 0.45, 0.7], 4.5, random);
-  particles.burst(400, 0, 200, 260, [1, 1, 1], 1.5, 7, random);
+  particles.ring(-400, 0, 20, 1800, 28, NEBULA_INNER, NEBULA_RIM, 10, random);
+  particles.shell(400, 0, 1600, 140, [1.0, 0.45, 0.7], 4.5, random);
+  particles.burst(400, 0, 500, 260, [1, 1, 1], 1.5, 3.5, random);
   particles.shell(0, -350, 220, 90, [1.0, 0.85, 0.5], 1.6, random);
   waves.pulse(0, -350, 0, [1.0, 0.85, 0.5], 100, 1.4);
   waves.push(0, 350, 0);

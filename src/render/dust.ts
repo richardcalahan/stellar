@@ -14,8 +14,8 @@ import type { Resizable, Viewport } from './viewport';
 
 /** Dust floats within this many units above and below the plane, for a little volume. */
 export const DUST_THICKNESS = 20;
-export const DUST_POINT_SIZE = 4.5;
-export const DUST_ALPHA = 0.32;
+export const DUST_POINT_SIZE = 2.6;
+export const DUST_ALPHA = 0.24;
 
 const COLD: readonly [number, number, number] = [0.5, 0.2, 0.75];
 const WARM: readonly [number, number, number] = [0.25, 0.85, 0.4];
