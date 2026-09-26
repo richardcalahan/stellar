@@ -1,0 +1,82 @@
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  /* Fingers belong to the simulation, never to the browser. */
+  touch-action: none;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#webgl,
+#hud,
+#overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* Text layer: never intercepts a touch, so fingers reach the world beneath. */
+#hud {
+  pointer-events: none;
+}
+
+/* Button layer: transparent to touches except on its actual children. */
+#overlay {
+  pointer-events: none;
+}
+
+#overlay > * {
+  pointer-events: auto;
+}
+
+.fullscreen {
+  position: absolute;
+  right: calc(12px + env(safe-area-inset-right, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(16, 18, 30, 0.65);
+  color: #e6e6f0;
+  font:
+    13px system-ui,
+    -apple-system,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  cursor: pointer;
+}
+
+.fullscreen:hover {
+  background: rgba(40, 44, 70, 0.85);
+}
+
+.fullscreen[hidden] {
+  display: none;
+}
