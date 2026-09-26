@@ -54,4 +54,4 @@ so an object 40 units up on a 1080-pixel viewport grows by about 2 percent. That
     npm run typecheck && npm run lint && npm test
     npm run dev
 
-Open the URL, then add `?debug` for the readout. Resize the window, drag it to another display, and zoom the browser: the Sun stays round, centred, and about 35 px in radius, the corona glows, and the debug text stays sharp.
+Open the URL, then add `?debug` for the readout. Resize the window, drag it to another display, and zoom the browser: the Sun stays round, centred, and the same size, the corona glows, and the debug text stays sharp. (Module 1 drew the Sun at 35 px; Module 2 rescaled every body to the client's demo, where the Sun is about 7 px.)

@@ -1,4 +1,5 @@
-import { CLASS_NAMES, formatMass, isStar } from '../sim/stars';
+import { isStar, labelFor } from '../sim/stars';
+import type { Body } from '../sim/types';
 import type { World } from '../sim/world';
 import type { PlaneCamera } from './camera';
 import type { Hud, TextStyle } from './hud';
@@ -14,6 +15,11 @@ export const STAR_LABEL_CLEARANCE = 0.5;
 const LABEL_STYLE: TextStyle = {
   font: LABEL_FONT,
   color: 'rgba(255, 255, 255, 0.92)',
+  outline: 'rgba(0, 0, 0, 0.6)',
+};
+const DETAIL_STYLE: TextStyle = {
+  font: '10px system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif',
+  color: 'rgba(255, 255, 255, 0.8)',
   outline: 'rgba(0, 0, 0, 0.6)',
 };
 /** Bodies this far outside the viewport still get no label. */
@@ -32,6 +38,8 @@ export class Labels {
   constructor(
     private readonly hud: Hud,
     private readonly camera: PlaneCamera,
+    /** Progress toward a planet's next life stage, 0 to 1. Module 10 supplies it. */
+    private readonly progress: (body: Body) => number = () => 0,
   ) {}
 
   draw(world: World, viewport: Viewport): void {
@@ -50,8 +58,13 @@ export class Labels {
       const edge = body.radius * DIAGONAL + clearance;
       const x = p.x + edge + LABEL_GAP;
       const y = p.y - edge - LABEL_GAP - LABEL_LINE_HEIGHT;
-      this.hud.drawText(CLASS_NAMES[body.starClass], x, y, LABEL_STYLE);
-      this.hud.drawText(formatMass(body), x, y + LABEL_LINE_HEIGHT, LABEL_STYLE);
+      if (body.locked) this.hud.drawPadlock(x - 12, y + 1, 9, '#ff4d4d');
+      const lines = labelFor(body, this.progress(body));
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line === undefined) continue;
+        this.hud.drawText(line, x, y + i * LABEL_LINE_HEIGHT, i < 2 ? LABEL_STYLE : DETAIL_STYLE);
+      }
     }
   }
 }

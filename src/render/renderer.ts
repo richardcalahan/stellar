@@ -4,12 +4,14 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { PlaneCamera } from './camera';
+import { LensingPass } from './lensing';
 import { readViewport, type Resizable, type Viewport } from './viewport';
 
 /** Pixels brighter than this (in linear light) glow. Stars and coronas are above it, everything else below. */
 export const BLOOM_THRESHOLD = 0.8;
-export const BLOOM_STRENGTH = 0.6;
-export const BLOOM_RADIUS = 0.3;
+/** Kept faint on purpose: the corona sprite carries the glow, bloom only adds a hot core. */
+export const BLOOM_STRENGTH = 0.15;
+export const BLOOM_RADIUS = 0;
 
 /**
  * Owns the WebGL canvas, the scene, the fitted camera, and the post-processing
@@ -23,6 +25,8 @@ export class WorldRenderer {
   readonly gl: WebGLRenderer;
   viewport: Viewport;
 
+  /** Black hole lensing, fed each frame with screen positions. Off while there are no holes. */
+  readonly lensing = new LensingPass();
   private readonly composer: EffectComposer;
   private readonly bloom: UnrealBloomPass;
   private readonly resizables: Resizable[] = [];
@@ -52,6 +56,8 @@ export class WorldRenderer {
       BLOOM_THRESHOLD,
     );
     this.composer.addPass(this.bloom);
+    this.lensing.enabled = false;
+    this.composer.addPass(this.lensing);
     this.composer.addPass(new OutputPass());
 
     this.applyViewport(this.viewport);

@@ -46,7 +46,7 @@ Six stops, each with something to show, one thing to try, and one question to as
 
 **Say.** Because the camera sits at exactly that height, one unit in the world is one pixel on screen on the plane. The physics can think in pixels while the renderer draws in 3D. Anything above the plane is closer to the camera and looks a bit bigger; that is our depth cue later for discs and jets.
 
-**Try.** Set `CAMERA_FOV_DEG = 90`. The Sun stays 35 px wide because the fit adapts, but it looks rounder and the stars shrink (the camera is now much closer to the plane, so the stars are far away by comparison). Set it to `10`: almost flat, like a map. Restore `30`. Then run `npm test` in terminal 2 and show the test that walks the corners of five screen sizes through screen to plane and back within a hundredth of a pixel. Tests are how we know the formula is right on screens we do not own.
+**Try.** Set `CAMERA_FOV_DEG = 90`. The Sun stays the same size because the fit adapts, but it looks rounder and the stars shrink (the camera is now much closer to the plane, so the stars are far away by comparison). Set it to `10`: almost flat, like a map. Restore `30`. Then run `npm test` in terminal 2 and show the test that walks the corners of five screen sizes through screen to plane and back within a hundredth of a pixel. Tests are how we know the formula is right on screens we do not own.
 
 ## 0:18 to 0:23. Bloom, and why the Sun glows
 

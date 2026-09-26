@@ -26,13 +26,13 @@ with `eps = SOFTENING` (8 px). Without eps the pull goes to infinity when two bo
 
 **Semi-implicit Euler.** Each step: `v = v + a dt`, then `x = x + v dt` using the new v. Plain Euler moves first and then updates v. The two differ by one term of order dt, but plain Euler adds a little energy every step, so orbits spiral outward without limit. Semi-implicit Euler is symplectic: its energy error oscillates but never grows, which is why a 10 second orbit stays a 10 second orbit for as long as you watch.
 
-**Units.** Mass in Earth masses (`SOLAR = 333000`), distance in pixels on the plane (`AU = 300`), time in seconds. Kepler's third law for a circular orbit, `T^2 = 4 pi^2 a^3 / (G M)`, solved for G with `a = AU`, `M = SOLAR`, `T = T_REF = 10`:
+**Units.** Mass in Earth masses (`SOLAR = 333000`), distance in pixels on the plane (`AU = 300`), time in seconds. Kepler's third law for a circular orbit, `T^2 = 4 pi^2 a^3 / (G M)`, solved for G with `a = AU`, `M = SOLAR`, `T = T_REF`. The plan chose `T_REF = 10`; play showed that far too fast, so it is 25:
 
-    G = 4 pi^2 AU^3 / (T_REF^2 SOLAR) = 32.0
+    G = 4 pi^2 AU^3 / (T_REF^2 SOLAR) = 5.12
 
-**Speeds.** Circular speed `v = sqrt(G M / r)`, 188 px/s for Earth at one AU. Escape speed is `sqrt(2)` times that, 267 px/s. Period scales as `r^1.5`: 150 px takes 3.5 s, 500 px takes 21 s.
+**Speeds.** Circular speed `v = sqrt(G M / r)`, 75 px/s for Earth at one AU. Escape speed is `sqrt(2)` times that, 107 px/s. Period scales as `r^1.5`: 150 px takes 8.8 s, 500 px takes 54 s.
 
-**Size and light.** Radius in pixels is `6 + 29 M^0.25` below one solar mass and `6 + 29 M^0.3` above, M in solar masses: Earth 7, gas giant 10, red dwarf 22, Sun 35, blue giant 77. Luminosity is `M^1.5` suns. The planet shader uses lighting strength `L^0.5` (so red dwarfs still light their planets), falloff `AU^2 / (d^2 + AU^2 / 4)` (0.8 at one AU), and caps any one star at 2.
+**Size and light.** Star radius in pixels is `4 + 3 M^0.25` below one solar mass and `4 + 3 M^0.3` above, M in solar masses: red dwarf 5.7, Sun 7, blue giant 10.2, super giant 11.5. Planets use a gentler law, `5.5 + 0.5 log10(m + 1)` with m in Earth masses: Earth 5.7, gas giant 6.5, so they stay visible beside a 7 px Sun. The plan's original table (Sun 35 px) was measured against the client's demo frames during this module and found five times too big; in the demo a one solar mass star reads about 7 px in radius with its glow gone by 25 px, and a planet about 4 px, so the Sun is roughly twice a planet. Touch targets are a separate number (`MIN_HIT_RADIUS`, 24 px). Luminosity is `M^1.5` suns. The planet shader uses lighting strength `L^0.5` (so red dwarfs still light their planets), falloff `AU^2 / (d^2 + AU^2 / 4)` (0.8 at one AU), and caps any one star at 2.
 
 **Energy.** `sum(m v^2 / 2) - sum over pairs of G m_i m_j / sqrt(r^2 + eps^2)`, the same softened potential the force comes from. The orbit test watches it.
 

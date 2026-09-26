@@ -16,11 +16,22 @@ export interface Resizable {
  */
 export const MAX_PIXEL_RATIO = 2;
 
+let pixelRatioCap = MAX_PIXEL_RATIO;
+
+/** The performance pass lowers this when a device misses the frame budget. */
+export function setPixelRatioCap(cap: number): void {
+  pixelRatioCap = Math.max(1, Math.min(cap, MAX_PIXEL_RATIO));
+}
+
+export function getPixelRatioCap(): number {
+  return pixelRatioCap;
+}
+
 export function readViewport(): Viewport {
   return {
     width: window.innerWidth,
     height: window.innerHeight,
-    pixelRatio: Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO),
+    pixelRatio: Math.min(window.devicePixelRatio, pixelRatioCap),
   };
 }
 

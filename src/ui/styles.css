@@ -80,3 +80,307 @@ body {
 .fullscreen[hidden] {
   display: none;
 }
+
+/* Palette cards: green-outlined rounded cards with four dashed-ring icons. */
+.palette {
+  position: absolute;
+  width: 230px;
+  height: 72px;
+  box-sizing: border-box;
+  border: 2px solid #35c94a;
+  border-radius: 14px;
+  background: rgba(4, 12, 6, 0.75);
+  color: #e8ffe8;
+  text-align: center;
+  padding: 3px 6px 0;
+  transform-origin: center;
+  transition: opacity 0.2s;
+}
+
+.palette-disabled {
+  opacity: 0.35;
+}
+
+.palette-title {
+  font:
+    600 15px 'Helvetica Neue',
+    system-ui,
+    -apple-system,
+    Arial,
+    sans-serif;
+  letter-spacing: 0.06em;
+  line-height: 18px;
+}
+
+.palette-icons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2px;
+}
+
+.palette-icon {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  width: 50px;
+  color: inherit;
+  cursor: pointer;
+  touch-action: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.palette-ring {
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(190, 255, 200, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.palette-dot {
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 0 8px 2px currentColor;
+}
+
+.palette-sun .palette-dot {
+  background: #ffd94a;
+  color: #ffd94a;
+}
+
+.palette-redDwarf .palette-dot {
+  background: #ff7a1f;
+  color: #ff7a1f;
+}
+
+.palette-gasGiant .palette-dot {
+  background: #5d8dff;
+  color: #5d8dff;
+}
+
+.palette-planet .palette-dot {
+  background: #b9bcc4;
+  color: #b9bcc4;
+  width: 10px;
+  height: 10px;
+}
+
+.palette-empty .palette-dot {
+  visibility: hidden;
+}
+
+.palette-caption {
+  font:
+    9px 'Helvetica Neue',
+    system-ui,
+    -apple-system,
+    Arial,
+    sans-serif;
+  white-space: nowrap;
+}
+
+/* Lock and Orbit toggles beside a held body. */
+.modifiers {
+  position: absolute;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.modifier {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  width: 54px;
+  cursor: pointer;
+  touch-action: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #eee;
+  opacity: 0.75;
+}
+
+.modifier-ring {
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2px dashed currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modifier-lock {
+  color: #ff5a5a;
+}
+
+.modifier-orbit {
+  color: #4de07a;
+}
+
+.modifier-active {
+  opacity: 1;
+}
+
+.modifier-active .modifier-ring {
+  border-style: solid;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.modifier-caption {
+  font:
+    600 11px system-ui,
+    -apple-system,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  color: #eee;
+}
+
+/* Info buttons and panel. */
+.info-button {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 2px solid #c04dff;
+  background: rgba(40, 8, 60, 0.75);
+  color: #d98bff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  touch-action: none;
+}
+
+.info-panel {
+  position: absolute;
+  width: min(560px, 90vw);
+  max-height: 80vh;
+  overflow: auto;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  padding: 22px 26px;
+  border-radius: 18px;
+  border: 2px solid #c04dff;
+  background: rgba(14, 6, 24, 0.92);
+  color: #f0e6ff;
+  font:
+    14px/1.45 system-ui,
+    -apple-system,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  touch-action: pan-y;
+}
+
+.info-panel[hidden] {
+  display: none;
+}
+
+.info-panel h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+
+.info-panel h2 {
+  margin: 14px 0 4px;
+  font-size: 15px;
+  color: #d98bff;
+}
+
+.info-panel ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.info-panel li {
+  margin: 3px 0;
+}
+
+.info-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.info-reset,
+.info-close {
+  position: relative;
+  overflow: hidden;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(60, 20, 80, 0.7);
+  color: #fff;
+  font:
+    600 14px system-ui,
+    -apple-system,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.info-reset span:last-child {
+  position: relative;
+}
+
+.info-reset-fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: rgba(255, 80, 80, 0.6);
+  transition: width 0s;
+}
+
+.info-reset-holding .info-reset-fill {
+  width: 100%;
+  transition: width 0.8s linear;
+}
+
+/* Icons breathe so the card reads as touchable. */
+@keyframes palette-breathe {
+  from {
+    box-shadow: 0 0 6px 1px currentColor;
+  }
+  to {
+    box-shadow: 0 0 14px 4px currentColor;
+  }
+}
+
+.palette-dot {
+  animation: palette-breathe 2.2s ease-in-out infinite alternate;
+}
+
+.palette-icon:nth-child(2) .palette-dot {
+  animation-delay: -0.6s;
+}
+
+.palette-icon:nth-child(3) .palette-dot {
+  animation-delay: -1.2s;
+}
+
+.palette-icon:nth-child(4) .palette-dot {
+  animation-delay: -1.8s;
+}

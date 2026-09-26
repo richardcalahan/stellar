@@ -5,9 +5,9 @@ import { World } from '../world';
 
 describe('units', () => {
   it('derives G from Kepler so an Earth at one AU circles a Sun in T_REF seconds', () => {
-    expect(G).toBeCloseTo(32.0, 0);
+    expect(G).toBeCloseTo((4 * Math.PI ** 2 * AU ** 3) / (T_REF ** 2 * SOLAR), 9);
     const circular = Math.sqrt((G * SOLAR) / AU);
-    expect(circular).toBeCloseTo(188.5, 0);
+    expect(circular).toBeCloseTo((2 * Math.PI * AU) / T_REF, 6);
     expect((2 * Math.PI * AU) / circular).toBeCloseTo(T_REF, 6);
   });
 });
@@ -52,11 +52,13 @@ describe('gravity', () => {
     expect(Math.hypot(after.x - before.x, after.y - before.y)).toBeLessThan(1e-9 * scale);
   });
 
-  it('keeps an Earth at one AU on a 10 second orbit with under 1 percent energy drift over 10 laps', () => {
+  it('keeps an Earth at one AU on a T_REF second orbit with under 1 percent energy drift over 10 laps', () => {
     const world = new World();
     const speed = Math.sqrt((G * SOLAR) / AU);
     // The Sun gets the opposite momentum so the pair does not drift as a whole.
     const sun = world.spawn({ mass: SOLAR, x: 0, y: 0, vx: 0, vy: -speed / SOLAR });
+    // Ten laps outlast the Sun's 200 second life; this test is about the integrator, not death.
+    sun.lifetime = Infinity;
     const earth = world.spawn({ mass: 1, x: AU, y: 0, vx: 0, vy: speed });
     const energyBefore = world.energy();
 

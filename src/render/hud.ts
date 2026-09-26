@@ -14,6 +14,15 @@ export interface RingStyle {
   color: string;
   lineWidth?: number;
   dash?: readonly number[];
+  /** Advance the dash pattern by this many pixels, to make a ring crawl. */
+  dashOffset?: number;
+}
+
+export interface PillStyle {
+  font: string;
+  color: string;
+  background: string;
+  border: string;
 }
 
 const DEFAULT_FONT = '13px system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif';
@@ -71,10 +80,46 @@ export class Hud implements Resizable {
     const { ctx } = this;
     ctx.beginPath();
     ctx.setLineDash(style.dash ? [...style.dash] : []);
+    ctx.lineDashOffset = style.dashOffset ?? 0;
     ctx.lineWidth = style.lineWidth ?? 1.5;
     ctx.strokeStyle = style.color;
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.stroke();
     ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
+  }
+
+  /** A rounded pill with centred text, for toasts. x, y is the pill's centre. */
+  drawPill(text: string, x: number, y: number, style: PillStyle): void {
+    const { ctx } = this;
+    ctx.font = style.font;
+    const width = ctx.measureText(text).width + 18;
+    const height = 20;
+    ctx.beginPath();
+    ctx.roundRect(x - width / 2, y - height / 2, width, height, height / 2);
+    ctx.fillStyle = style.background;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = style.border;
+    ctx.stroke();
+    ctx.fillStyle = style.color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, y);
+  }
+
+  /** A small padlock glyph with its top-left at x, y. */
+  drawPadlock(x: number, y: number, size: number, color: string): void {
+    const { ctx } = this;
+    const bodyTop = y + size * 0.45;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(x, bodyTop, size, size * 0.55, size * 0.12);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.lineWidth = Math.max(1, size * 0.16);
+    ctx.strokeStyle = color;
+    ctx.arc(x + size / 2, bodyTop, size * 0.3, Math.PI, 0);
+    ctx.stroke();
   }
 }

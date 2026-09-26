@@ -22,12 +22,12 @@ describe('classify', () => {
 
 describe('radiusFor', () => {
   it('matches the size table in world units', () => {
-    expect(radiusFor(1)).toBeCloseTo(7.2, 0);
-    expect(radiusFor(100)).toBeCloseTo(9.8, 0);
-    expect(radiusFor(0.1 * SOLAR)).toBeCloseTo(22.3, 0);
-    expect(radiusFor(SOLAR)).toBe(35);
-    expect(radiusFor(2 * SOLAR)).toBeCloseTo(41.7, 0);
-    expect(radiusFor(20 * SOLAR)).toBeCloseTo(77.2, 0);
+    expect(radiusFor(1)).toBeCloseTo(5.7, 0);
+    expect(radiusFor(100)).toBeCloseTo(6.5, 0);
+    expect(radiusFor(0.1 * SOLAR)).toBeCloseTo(5.7, 0);
+    expect(radiusFor(SOLAR)).toBe(7);
+    expect(radiusFor(2 * SOLAR)).toBeCloseTo(7.7, 0);
+    expect(radiusFor(20 * SOLAR)).toBeCloseTo(11.4, 0);
   });
 });
 
@@ -46,8 +46,8 @@ describe('World.spawn', () => {
     const planet = world.spawn({ mass: PALETTE_MASSES.planet, x: 300, y: 0 });
 
     expect(sun.starClass).toBe('yellow');
-    expect(sun.radius).toBe(35);
-    expect(sun.hitRadius).toBe(35);
+    expect(sun.radius).toBe(7);
+    expect(sun.hitRadius).toBe(24);
     expect(planet.starClass).toBe('planet');
     expect(planet.hitRadius).toBe(24);
     expect(planet.luminosity).toBe(0);
