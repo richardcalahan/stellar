@@ -24,6 +24,7 @@ export class WorldRenderer {
   viewport: Viewport;
 
   private readonly composer: EffectComposer;
+  private readonly bloom: UnrealBloomPass;
   private readonly resizables: Resizable[] = [];
 
   constructor(canvas: HTMLCanvasElement) {
@@ -44,14 +45,13 @@ export class WorldRenderer {
 
     this.composer = new EffectComposer(this.gl);
     this.composer.addPass(new RenderPass(this.scene, this.camera.three));
-    this.composer.addPass(
-      new UnrealBloomPass(
-        new Vector2(this.viewport.width, this.viewport.height),
-        BLOOM_STRENGTH,
-        BLOOM_RADIUS,
-        BLOOM_THRESHOLD,
-      ),
+    this.bloom = new UnrealBloomPass(
+      new Vector2(this.viewport.width, this.viewport.height),
+      BLOOM_STRENGTH,
+      BLOOM_RADIUS,
+      BLOOM_THRESHOLD,
     );
+    this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
 
     this.applyViewport(this.viewport);
@@ -79,6 +79,11 @@ export class WorldRenderer {
     this.gl.setSize(viewport.width, viewport.height, false);
     this.composer.setPixelRatio(viewport.pixelRatio);
     this.composer.setSize(viewport.width, viewport.height);
+    // The composer just sized the bloom blur chain in device pixels, which would make the
+    // halo half as wide and twice as hot on a Retina display. Size it in CSS pixels instead,
+    // so the glow looks the same on every screen. The blur textures are sampled, not copied,
+    // so they need not match the frame's resolution.
+    this.bloom.setSize(viewport.width, viewport.height);
     for (const target of this.resizables) target.resize(viewport);
   }
 }

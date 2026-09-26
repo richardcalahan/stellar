@@ -5,6 +5,9 @@ export interface TextStyle {
   color?: string;
   align?: CanvasTextAlign;
   baseline?: CanvasTextBaseline;
+  /** Stroke colour drawn behind the glyphs, so text stays readable over a glowing star. */
+  outline?: string;
+  outlineWidth?: number;
 }
 
 export interface RingStyle {
@@ -55,6 +58,12 @@ export class Hud implements Resizable {
     ctx.fillStyle = style.color ?? '#ffffff';
     ctx.textAlign = style.align ?? 'left';
     ctx.textBaseline = style.baseline ?? 'top';
+    if (style.outline !== undefined) {
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = style.outlineWidth ?? 3;
+      ctx.strokeStyle = style.outline;
+      ctx.strokeText(text, x, y);
+    }
     ctx.fillText(text, x, y);
   }
 
